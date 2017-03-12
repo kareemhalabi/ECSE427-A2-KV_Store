@@ -25,6 +25,7 @@ typedef struct {    \
 typedef struct {    \
     int write_ptr;  \
     int read_ptr;   \
+    char prev_key[key_size];\
     int read_cnt;   \
     kv_pair kv_pairs[pairs_per_pod]; \
 } pod; \
@@ -33,6 +34,9 @@ typedef struct {    \
     char *name;     \
     pod pods[num_pods]; \
 } kv_store;
+
+// write_ptr is the index of the NEXT location to write
+// read_ptr is 1 after the index of the LAST location that was read
 
 DEF_KV_STORE(32,32,32,32); // Define kv_store params here
 // it is recommended that you select num_pods and pairs per pod such that
@@ -207,19 +211,26 @@ char * kv_store_read(char *key) {
     // Don't bother searching if empty
     if(size > 0) {
 
-        //Want to stop one index before start
-        //If negative, wrap around to last value
-        int stop = p->read_ptr;
+        //Check if the same key is searched again
+        int start_stop;
+        if(strcmp(key, p->prev_key) == 0) {
+            // If repeated start where left off
+            start_stop = p->read_ptr % size;
+        } else {
+            // Otherwise start at oldest item
+            start_stop = p->write_ptr % size;
+        }
 
-        int i = p->read_ptr;
+        int i = start_stop;
         do {
             if (strcmp(pairs[i].key, key) == 0) {
                 copy = strdup(pairs[i].value);
+                memcpy(p->prev_key, key, sizeof(p->prev_key));
                 p->read_ptr = (i + 1) % size;
                 break;
             }
             i = (i + 1) % size;
-        } while(i != stop);
+        } while(i != start_stop);
     }
 
     // decrement reader count

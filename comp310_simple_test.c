@@ -10,6 +10,10 @@ int main() {
     kv_store_write("test key1", "test value");
     printf("Write success\n");
     kv_store_write("test key1", "test value 2");
+    kv_store_write("test key2", "key2");
+    kv_store_write("test key1", "test value 3");
+    printf("%s\n", kv_store_read("test key1"));
+    printf("%s\n", kv_store_read("test key2"));
     printf("%s\n", kv_store_read("test key1"));
     printf("%s\n", kv_store_read("test key1"));
     printf("%s\n", kv_store_read("test key1"));
