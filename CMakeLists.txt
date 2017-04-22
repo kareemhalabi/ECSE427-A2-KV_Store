@@ -17,6 +17,13 @@ set(SOURCE_FILES3
         comp310_simple_test.c
         a2_lib.h)
 
+set(SOURCE_FILES4
+        a2_lib.c
+        read_eval.c
+        read_eval.h
+        config.h)
+
 add_executable(a2_testcase1 ${SOURCE_FILES1})
 add_executable(a2_testcase2 ${SOURCE_FILES2})
 add_executable(a2_simplecase ${SOURCE_FILES3})
+add_executable(a2_manual ${SOURCE_FILES4})
